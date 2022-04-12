@@ -1,8 +1,11 @@
 # selective_puzzlebox
 
 This repository contains data generated and code for replicating all analyses for:
+
 'Manipulating actions: a selective two-option device for cognitive experiments in wild animals'
+
 Authors: Sonja Wild, Gustavo Alarcón-Nieto, Michael Chimento, Lucy Aplin
+
 Journal of Animal Ecology
 
 **age.data.2021.txt**
