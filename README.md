@@ -1,14 +1,14 @@
 # selective_puzzlebox
 
 This repository contains data generated and code for replicating all analyses for:
-
+---------------------------------------------------------------
 **'Manipulating actions: a selective two-option device for cognitive experiments in wild animals'**
 
 Authors: **Sonja Wild, Gustavo Alarcón-Nieto, Michael Chimento, Lucy Aplin**
 
 **Journal of Animal Ecology**
 
-
+---------------------------------------------------------------
 For replication of survival analysis (calculating latencies), only files **latency_to_switch_R** and **latencies.ILVs.txt** are needed. The latter contains all compiled individual-level variables - raw data is provided in the other files detailed below. 
 
 -------------------------------------------------------------
