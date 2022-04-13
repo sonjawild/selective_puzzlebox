@@ -8,6 +8,9 @@ Authors: **Sonja Wild, Gustavo Alarcón-Nieto, Michael Chimento, Lucy Aplin**
 
 **Journal of Animal Ecology**
 
+
+For replication of survival analysis (calculating latencies), only files **latency_to_switch_R** and **latencies.ILVs.txt** are needed. The latter contains all compiled individual-level variables - raw data is provided in the other files detailed below. 
+
 **age.data.2021.txt**
 - raw data to generate individual-level variables for birds with the following columns:
 - Date: date (yyyy-mm-dd) of capture 
@@ -27,6 +30,15 @@ Authors: **Sonja Wild, Gustavo Alarcón-Nieto, Michael Chimento, Lucy Aplin**
 - solver: indicating whether the bird had solved prior to the restriction date (see manuscript); 
 'no'= no solves; 'solver_left' or 'solver_right' if minimum of 10 solves prior to the restrition date; 'tutor' if knowledgeable bird from previous captive experiment
 - num.solves: total number of solves up until the restriction date
+
+**block.size.analysis.RDA**
+data frame containing calculated solving rates per bird for blocks of visits of different sizes (e.g. per 10, 20, 30, 40, 50 visits), including the variance of the solving rates across block sizes. 
+- PIT: individual alphanumeric PIT code
+- block.size: number of visits across which solving rate was calculated
+- solve.rate.prior: solve rate as solves per visits calculated across 10 experimental days prior to the restriction
+- variance: variance in solving rate calculated separately for each block size. Can only be calculated if there are >1 block per size (see numb.blocks)
+- prop.within.10.percent: percentage of blocks of a particular size (e.g. 10), for which the calculated solving rate was at least 90% of the solving rate from prior
+- num.blocks: the number of distinct blocks of a particular size for each individual. E.g. if an individual has visited 90 times after the restriction, it would have 9 blocks of size 10, 4 full blocks of size 20, 3 blocks of size 30, two blocks of size 40 and 1 block of size 50).
 
 **gmm.McDonalds.all.RData** and **gmm.Mettnau.all.RData**
 RDA file containing raw data collected from RFID network feeders
@@ -59,6 +71,11 @@ txt file containing the compiled individual level data needed for survival analy
 - censored.rate: 1 if birds reached their prior solving rate, 0 if not
 - solve.rate.prior: solve rate as solves per visits in the 10 days prior to the restriciton
 - solves.rate.after.total: solve rate as solves per visit after the restriction
+- solve.rate.in.block: solve rate as solves per visits in the block of visits in which the bird reached the solve rate from prior (see SI)
+- solve.rate.after.rate.reached: solve rate as solves per visit after the restriction after the bird has reached the solve rate from prior (until the end of the experiment)
+- summed.strength: summed association strength to informed inviduals based on network data resulting from RFID feeders (association strengt = simple ratio association index)
+- age: 'first.year' or 'adult'
+- species: only "GRETI" = great tit
 
 **puzzle.data.RDA**
 RDA file containing two slots $McDonalds and $Mettnau with the raw data collected at puzzle boxes
