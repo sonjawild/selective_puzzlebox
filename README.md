@@ -94,3 +94,6 @@ RDA file containing two slots $McDonalds and $Mettnau with the raw data collecte
 - location: experimental puzzle box site ("McDonalds_back"; "McDonalds_front"; "Mettnau_back"; "Mettnau_front")
 - date.time: yyyymmddHHMMSS
 - week: number of experimental week since start of experiment
+
+CITATION:
+[![DOI](https://zenodo.org/badge/445620111.svg)](https://zenodo.org/badge/latestdoi/445620111)
