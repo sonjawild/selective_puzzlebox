@@ -705,7 +705,8 @@ setwd("C:/Users/swild/Desktop/Konstanz/Restricted puzzle box/git/restricted.puzz
 # restr.data.combined$species <- species.vec
 # head(restr.data.combined)
 # length(restr.data.combined[,1])
-
+# add sex column
+# restr.data.combined$sex <- c("M",	"M",	"M",	"F",	"M",	"M",	"M",	"F",	"F",	"M",	"M",	"M",	"M",	"M",	"M",	"M",	"M",	"M",	"M",	"M",	"F",	"F",	"M",	"M",	"M",	"M",	"M",	"F")
 # write.table(restr.data.combined, file="latencies.ILVs.txt")
 
 # this contains the extracted data in a ready-to-go data frame
@@ -810,26 +811,26 @@ length(restr.data.combined.for.cox$PIT)
 fit.multi.collinearty <-
   lm(
     latency.first.solve ~ solve.rate.prior + summed.strength + age + tutor +
-      pref_strength + solves_10_days_prior,
+      pref_strength + solves_10_days_prior + sex,
     data = restr.data.combined.for.cox
   )
 summary(fit.multi.collinearty)
 vif(fit.multi.collinearty)
 
-# solve.rate.prior      summed.strength       age                tutor              pref_strength solves_10_days_prior 
-# 4.098490             1.373441             1.242394             2.246181             1.482034             3.289813 
+# solve.rate.prior      summed.strength                  age                tutor        pref_strength solves_10_days_prior                  sex 
+# 4.107498             1.388132             1.247166             3.065243             1.522196             3.293618             1.581765 
 
-# we get an inflated VIF for the solve rate prior (4.09) - hence we drop it and recalculate the VIFs
+# we get an inflated VIF for the solve rate prior (4.1) - hence we drop it and recalculate the VIFs
 fit.multi.collinearty <-
   lm(
     latency.first.solve ~  summed.strength + age + tutor +
-      pref_strength + solves_10_days_prior,
+      pref_strength + solves_10_days_prior + sex,
     data = restr.data.combined.for.cox
   )
 summary(fit.multi.collinearty)
 vif(fit.multi.collinearty)
-# summed.strength                  age                tutor        pref_strength solves_10_days_prior 
-# 1.244140             1.159382             1.523147             1.464692             1.359561
+# summed.strength                  age                tutor        pref_strength solves_10_days_prior                  sex 
+# 1.255005             1.166189             2.270002             1.502335             1.375607             1.578296
 
 # this reduces VIFs to below 2.5
 
@@ -854,7 +855,7 @@ survival.latency.first
 
 test.ph.latency.first <-   coxph(
   survival.latency.first ~   summed.strength + age + tutor +
-    pref_strength + solves_10_days_prior,
+    pref_strength + solves_10_days_prior + sex,
   data = restr.data.combined.for.cox
 )
 
@@ -864,13 +865,14 @@ test.ph.latency.first
 
 out.test.ph.latency.first
 
-#                       chisq df    p
-# summed.strength      0.1316  1 0.72
-# age                  0.1361  1 0.71
-# tutor                1.5333  1 0.22
-# pref_strength        0.0231  1 0.88
-# solves_10_days_prior 0.2825  1 0.60
-# GLOBAL               4.4000  5 0.49
+# chisq df    p
+# summed.strength      0.2347  1 0.63
+# age                  0.0394  1 0.84
+# tutor                1.1157  1 0.29
+# pref_strength        0.1259  1 0.72
+# solves_10_days_prior 0.1540  1 0.69
+# sex                  3.5407  1 0.06
+# GLOBAL               5.7506  6 0.45
 
 # The proportional hazard assumption is supported by a non-significant relationship between residuals and time, and refuted by a significant relationship
 # here, we have no significant values, indicating the the hazard assumption is supported and we can use the cox models for our data
@@ -882,7 +884,7 @@ out.test.ph.latency.first
 m.first.solve <-
   coxme(
     survival.latency.first ~   summed.strength + age + tutor +
-      pref_strength + solves_10_days_prior + (1|site),
+      pref_strength + solves_10_days_prior + sex + (1|site),
     data = restr.data.combined.for.cox
   )
 
@@ -908,19 +910,19 @@ plot(dredge.m.first.solve)
 # to calculate support for covariates, we can get the summed Akaike weights
 sw(subset(model.sel(dredge.m.first.solve)))
 
-#                 solves_10_days_prior pref_strength summed.strength tutor age 
-# Sum of weights:      0.91                 0.42          0.35            0.34  0.21
-# N containing models:   16                   16            16              16    16
+#                       solves_10_days_prior pref_strength summed.strength tutor sex  age 
+# Sum of weights:      0.92                 0.40          0.34            0.31  0.28 0.21
+# N containing models:   32                   32            32              32    32   32
 
 # we consider weights with more support than against (>0.5) as important
 
 # extract model average estimate based on models with deltaAIc of <4 (subset - as 4 is default)
 mle.first.solve <- model.avg(dredge.m.first.solve, subset = delta <= 4)
 mle.first.solve
-#Coefficients: 
-#   pref_strength solves_10_days_prior   tutoryes summed.strength agefirst.year
-# full       -1.145801          0.003052886 -0.2125277      -0.2642769  -0.006703916
-# subset     -2.863728          0.003052886 -0.6651375      -0.8534901  -0.039290190
+# Coefficients: 
+#         pref_strength solves_10_days_prior   tutoryes summed.strength      sexM agefirst.year
+# full       -1.044324           0.00307049 -0.1862456      -0.2475719 0.1461442  -0.005224935
+# subset     -2.825988           0.00307049 -0.6533577      -0.8493976 0.6624412  -0.039290190
 # we can extract the hazard ratios by exponentiation from the 'subset'
 # which only considers models within a deltaAICc of 4
 exp(mle.first.solve$coefficients[2,])
@@ -955,7 +957,7 @@ survival.latency.rate
 
 test.ph.latency.rate <-   coxph(
   survival.latency.rate ~   summed.strength + age + tutor +
-    pref_strength + solves_10_days_prior,
+    pref_strength + solves_10_days_prior + sex,
   data = restr.data.combined.for.cox
 )
 
@@ -965,13 +967,14 @@ out.test.ph.latency.rate <-   cox.zph(
 
 out.test.ph.latency.rate
 
-                        # chisq df     p
-# summed.strength      2.73e-05  1 0.996
-# age                  1.25e-01  1 0.724
-# tutor                1.83e+00  1 0.176
-# pref_strength        3.27e+00  1 0.071
-# solves_10_days_prior 2.89e+00  1 0.089
-# GLOBAL               1.02e+01  5 0.071
+#                       chisq df     p
+# summed.strength       1.5120  1 0.219
+# age                   0.1042  1 0.747
+# tutor                 0.0413  1 0.839
+# pref_strength         3.1849  1 0.074
+# solves_10_days_prior  0.1375  1 0.711
+# sex                   0.2826  1 0.595
+# GLOBAL               12.9580  6 0.044
 
 # again, no p-values are significant, meaning that the assumptions are met
 
@@ -980,7 +983,7 @@ out.test.ph.latency.rate
 # we include an interaction term for preferred strength and the number of solves in the 10 days prior to the restriction
 m.rate.solve <-
   coxme(
-    survival.latency.rate ~  summed.strength  + solves_10_days_prior + pref_strength  + tutor + age + (1|site),
+    survival.latency.rate ~  summed.strength  + solves_10_days_prior + pref_strength  + tutor + age + sex + (1|site),
     data = restr.data.combined.for.cox
   )
 
@@ -1004,18 +1007,17 @@ plot(dredge.m.rate.solve)
 # to calculate support for covariates, we can get the summed Akaike weights
 sw(subset(model.sel(dredge.m.rate.solve)))
 
-#                 pref_strength summed.strength tutor age  solves_10_days_prior
-# Sum of weights:      0.67          0.30            0.28  0.27 0.24                
-# N containing models:   16            16              16    16   16                      
+#                      sex  pref_strength tutor solves_10_days_prior age  summed.strength
+# Sum of weights:      0.68 0.67          0.61  0.39                 0.25 0.24           
+# N containing models:   32   32            32    32                   32   32                       
 
 # extract model average estimate based on models with deltaAIc of <4 (subset - as 4 is default)
 mle.rate.solve <- model.avg(dredge.m.rate.solve, subset = delta <= 4)
 mle.rate.solve
 # Coefficients: 
-#           pref_strength agefirst.year summed.strength    tutoryes solves_10_days_prior
-# full       -3.388433    -0.1024626      -0.2857158 -0.09634687         0.0001062727
-# subset     -4.540927    -0.5052755      -1.0823228 -0.62101714         0.0008444579
-# get hazard rates by exponentiating
+#         pref_strength      sexM solves_10_days_prior  tutoryes agefirst.year summed.strength
+# full       -3.681236 -1.991234         0.0008227369 -1.595539    -0.1040227      -0.1127351
+# subset     -4.984254 -2.663185         0.0023440194 -2.399956    -0.5835972      -0.7735926
 exp(mle.rate.solve$coefficients[2,])
 
 
@@ -1042,12 +1044,13 @@ confint.upper.first <- as.vector(exp(confint(mle.first.solve)[,2]))
 comb.first <- cbind.data.frame(cov.first, mle.first, hazard.first, confint.lower.first, confint.upper.first)
 comb.first <- rbind.data.frame(comb.first, c("tutor_ref", NA, 1+(1-as.numeric(comb.first$hazard.first[which(comb.first$cov.first=="tutoryes")])), NA, NA))
 comb.first <- rbind.data.frame(comb.first, c("age_ref", NA, 1+(1-as.numeric(comb.first$hazard.first[which(comb.first$cov.first=="agefirst.year")])), NA, NA))
+comb.first <- rbind.data.frame(comb.first, c("sex_ref", NA, 1+(1-as.numeric(comb.first$hazard.first[which(comb.first$cov.first=="sexM")])), NA, NA))
 
 class(comb.first)
 comb.first$hazard.first <- as.numeric(comb.first$hazard.first)
 comb.first$confint.lower.first <- as.numeric(comb.first$confint.lower.first)
 comb.first$confint.upper.first <- as.numeric(comb.first$confint.upper.first)
-comb.first$names.first <- c("Strength of side preference","Num. solves prior", "Tutor (yes)",  "Summed strength with informed inds.", "Age (first year)", "Tutor (no - reference)", "Age (adults - reference)")
+comb.first$names.first <- c("Strength of side preference","Num. solves prior", "Tutor (yes)", "Summed strength with informed inds.", "Sex (male)", "Age (first year)", "Tutor (no - reference)", "Age (adults - reference)", "Sex (female - reference")
 
 # reorder:
 comb.first <- comb.first[order(comb.first$cov.first, decreasing=TRUE),]
@@ -1079,13 +1082,23 @@ confint.upper.rate <- as.vector(exp(confint(mle.rate.solve)[,2]))
 comb.rate <- cbind.data.frame(cov.rate, mle.rate, hazard.rate, confint.lower.rate, confint.upper.rate)
 comb.rate <- rbind.data.frame(comb.rate, c("tutor_ref", NA, 1+(1-as.numeric(comb.rate$hazard.rate[which(comb.rate$cov.rate=="tutoryes")])), NA, NA))
 comb.rate <- rbind.data.frame(comb.rate, c("age_ref", NA, 1+(1-as.numeric(comb.rate$hazard.rate[which(comb.rate$cov.rate=="agefirst.year")])), NA, NA))
-
+comb.rate <- rbind.data.frame(comb.rate, c("sex_ref", NA, 1+(1-as.numeric(comb.rate$hazard.rate[which(comb.rate$cov.rate=="sexM")])), NA, NA))
 class(comb.rate)
 comb.rate$hazard.rate <- as.numeric(comb.rate$hazard.rate)
 comb.rate$confint.lower.rate <- as.numeric(comb.rate$confint.lower.rate)
 comb.rate$confint.upper.rate <- as.numeric(comb.rate$confint.upper.rate)
 comb.rate$names.rate <-
-  c("Strength of side preference","Num. solves prior", "Tutor (yes)",  "Summed strength with informed inds.", "Age (first year)", "Tutor (no - reference)", "Age (adults - reference)")
+  c(
+    "Strength of side preference",
+    "Sex (male)",
+    "Num. solves prior",
+    "Tutor (yes)",
+    "Age (first year)",
+    "Summed strength with informed inds.",
+    "Tutor (no - reference)",
+    "Age (adults - reference)",
+    "Sex (female - reference)"
+  )
 
 
 
