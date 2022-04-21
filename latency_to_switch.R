@@ -16,6 +16,7 @@ library(egg)
 # set working directory
 setwd("C:/Users/swild/Desktop/Konstanz/Restricted puzzle box/git/restricted.puzzle.box")
 
+
 # THE FOLLOWING CODE EXTRACTS DATA FOR ANALYSIS FROM RAW DATA
 # BUT IS NOT NEEDED TO RUN THE COX PROPORTIONAL HAZARD MODELS
 # USERS CAN DIRECTLY JUMP TO LINE 712 AND IMPORT THE EXTRACTED DATA DIRECTLY
